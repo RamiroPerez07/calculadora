@@ -1,5 +1,31 @@
-var acumDig = []
-var acumOp = []
+let Operacion = {
+    a: 0,
+    b: 0,
+    operator: "",
+    resultado: "",
+    reset: function (){
+        this.a = 0;
+        this.b = 0;
+        this.operator = "";
+        this.resultado = ""
+    },
+    add: function (){
+        this.resultado = this.a + this.b;
+        return this.resultado;
+    },
+    subtract: function (){
+        this.resultado = this.a - this.b;
+        return this.resultado;
+    },
+    multiply: function (){
+        this.resultado = this.a * this.b;
+        return this.resultado;
+    },
+    divide: function (){
+        this.b!=0?this.resultado = this.a / this.b:alert("Error: Denominador igual a 0");
+        return this.resultado;
+    }
+}
 
 let $displayFrame = document.getElementById("operations-frame")
 let $displayResultado = document.getElementById("results-frame")
@@ -10,76 +36,70 @@ function cleanDisplay(){
     $displayFrames.forEach(obj => {
         obj.textContent = "";
     });
-    acumDig = []
-    acumOp = []
+    Operacion.reset()
+}
+
+//event.currentTarget.textContent  => accedo al valor del elemento que se pasa
+
+function updateNumbers(){
+    Operacion.a = parseFloat($displayFrame.textContent.split(Operacion.operator)[0])
+    Operacion.b = parseFloat($displayFrame.textContent.split(Operacion.operator)[1])
+    console.log("a vale: "+Operacion.a+ " y b vale: "+Operacion.b )
 }
 
 function addDigitToDisplay(event){
-    let resultado = $displayResultado.textContent;
-    if (resultado != ""){
-        texto_actual = acumDig[acumDig.length-1]
-        cleanDisplay();
-    }else{
-        texto_actual = $displayFrame.textContent
+
+    if (event.currentTarget.classList[1] == "operator" && $displayResultado.textContent != ""){
+        $displayFrame.textContent = $displayResultado.textContent;
+        $displayResultado.textContent = "";
     }
-    $displayFrame.textContent = texto_actual + event.currentTarget.textContent;
+
+    if (event.currentTarget.classList[1] == "digit" && $displayResultado.textContent != ""){
+        $displayResultado.textContent = "";
+        $displayFrame.textContent = ""
+    }
+
+    $displayFrame.textContent += event.currentTarget.textContent //agrego el digito al display
+    updateNumbers()
+
 }
+
 
 function addOperatorToDisplay(event){
-    let resultado = $displayResultado.textContent
-    let texto_actual;
-    if (resultado  == ""){
-        texto_actual = $displayFrame.textContent
-        // console.log("el operador ingresado es" +texto_actual)
-    }else{
-        texto_actual = $displayResultado.textContent;
-        $displayFrame.textContent = texto_actual;
+
+    if(Operacion.operator ==""){
+        Operacion.operator = event.currentTarget.textContent;
+        addDigitToDisplay(event);
     }
-
-    //actualizo los vectores que llevan las operaciones
-    acumDig.push(texto_actual);
-    acumOp.push(event.currentTarget.textContent)
-
-    addDigitToDisplay(event);
 }
+
 
 function calculate(){
 
-    //obtengo el ultimo numero enviado
-    let texto_actual = $displayFrame.textContent
-    let ult_dig = texto_actual.split(acumOp[acumOp.length-1])[1]
-    texto_actual = parseFloat(ult_dig)
-    acumDig.push(texto_actual);
-
-    a = parseFloat(acumDig[acumDig.length-2])
-    b = parseFloat(acumDig[acumDig.length-1])
-    //console.log(a,b)
-
-    let resultado;
-
-    switch(acumOp[acumOp.length-1]){
-        case "/":
-            resultado = a/b;
-            break;
-        case "*":
-            resultado = a*b;
-            break;
-        case "+":
-            resultado = a+b;
-            break;
-        case "-":
-            resultado = a-b;
-            break;
-        default:
-            resultado = null;
-            console.log("La operación no pudo identificarse")
-            break;
+    if(Operacion.a==0 || Operacion.b ==0){
+        return;
     }
 
-    $displayResultado = document.getElementById("results-frame")
-    $displayResultado.textContent = resultado != null? resultado.toFixed(2): "Error"
-
-    acumDig.push(resultado)
+    switch(Operacion.operator){
+        case "+":
+            Operacion.add()
+            break;
+        case "-":
+            Operacion.subtract()
+            break;
+        case "*":
+            Operacion.multiply()
+            break;
+        case "/":
+            Operacion.divide()
+            break;
+        default:
+            Operacion.resultado = null;
+            console.log("No se ha ingresado una operación válida")
+            break;
+    }
+    $displayResultado.textContent = Operacion.resultado;
+    Operacion.reset()
 }
 
 //boton limpiar
