@@ -27,7 +27,7 @@ body{
     display: grid;
     place-items: center;
     background-color: var(--color1);
-    gap: 15px;
+    gap: 10px;
 }
 
 h1{
