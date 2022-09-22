@@ -76,7 +76,7 @@ function addOperatorToDisplay(event){
 
 function calculate(){
 
-    if(Operacion.a==0 || Operacion.b ==0){
+    if(isNaN(Operacion.a) || isNaN(Operacion.b)){
         return;
     }
 
